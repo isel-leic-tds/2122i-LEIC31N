@@ -2,38 +2,44 @@ package tennis.oo
 
 import tennis.Player
 
-enum class Points(val number: Int){ LOVE(0), FIFTEEN(15), THIRTY(30), FORTY(40);
+private enum class Points(val number: Int){ LOVE(0), FIFTEEN(15), THIRTY(30);
     fun advance() = values()[ordinal+1]
 }
 
 sealed class Score {
-    abstract fun print()
+    fun print() { println(toString()) }
     open fun isGame() = false
     abstract fun next(win: Player): Score
 }
-class ByPoints(val pointsOfA: Points, val pointsOfB: Points): Score() {
-    override fun print() { println("${pointsOfA.number} - ${pointsOfB.number}") }
+private class ByPoints(private val pointsOfA: Points, private val pointsOfB: Points): Score() {
+    override fun toString() = "${pointsOfA.number} - ${pointsOfB.number}"
+    private fun pointsOf(p:Player) = if(p==Player.A) pointsOfA else pointsOfB
     override fun next(win: Player): Score = when {
-        pointsOfA===Points.FORTY && pointsOfB===Points.THIRTY && win==Player.B -> Deuce
-        pointsOfB===Points.FORTY && pointsOfA===Points.THIRTY && win==Player.A -> Deuce
-        pointsOfA===Points.FORTY && win==Player.A -> Game(Player.A)
-        pointsOfB===Points.FORTY && win==Player.B -> Game(Player.B)
+        pointsOf(win)===Points.THIRTY -> Forty(win,pointsOf(win.other()))
         else -> if (win === Player.A) ByPoints(pointsOfA.advance(), pointsOfB)
                 else ByPoints(pointsOfA, pointsOfB.advance())
     }
 }
-object Deuce : Score() {
-    override fun print() { println("Deuce") }
+private class Forty(private val player: Player, private val pointOfOther: Points) : Score() {
+    override fun toString() = if( player===Player.A) "40 - ${pointOfOther.number}" else "${pointOfOther.number} - 40"
+    override fun next(win: Player) = when {
+        win===player -> Game(win)
+        pointOfOther===Points.THIRTY -> Deuce
+        else -> Forty(player, pointOfOther.advance())
+    }
+}
+private object Deuce : Score() {
+    override fun toString() = "Deuce"
     override fun next(win: Player) = Advantage(win)
 }
-class Game(val winner: Player) : Score() {
-    override fun print() { println("Game of ${winner.name}") }
+private class Game(private val winner: Player) : Score() {
+    override fun toString() = "Game to ${winner.name}"
     override fun isGame() = true
     override fun next(win: Player):Score { throw IllegalStateException() }
 }
-class Advantage(val of: Player) : Score() {
-    override fun print() { println("Advantage of ${of.name}") }
+private class Advantage(private val of: Player) : Score() {
+    override fun toString() = "Advantage of ${of.name}"
     override fun next(win: Player) = if (win===of) Game(win) else Deuce
 }
 
-val InitialScore = ByPoints(Points.LOVE, Points.LOVE)
+val InitialScore: Score = ByPoints(Points.LOVE, Points.LOVE)

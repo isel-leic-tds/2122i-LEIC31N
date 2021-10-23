@@ -1,10 +1,11 @@
 package tennis
 
-//import io.*
-import readln
-import tennis.oo.*
+import io.*
+import tennis.fp.*
 
-enum class Player{ A, B }
+enum class Player{ A, B;
+    fun other() = if (this===A) B else A
+}
 
 fun main() {
     var game: Score = InitialScore
