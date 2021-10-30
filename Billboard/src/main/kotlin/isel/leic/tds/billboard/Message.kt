@@ -10,4 +10,6 @@ fun isValidAuthorId(id: String) = id.isNotBlank()
 
 fun String.toAuthorOrNull() = if (isValidAuthorId(this)) Author(this) else null
 
-
+data class Message(val author:Author, val content:String) {
+    override fun toString() = "${author.id}: $content"
+}
