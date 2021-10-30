@@ -1,9 +1,27 @@
 package isel.leic.tds.billboard
 
-fun getMessage(authorId: String?) {
-    println("getMessage: authorId = [${authorId}]")
+import isel.leic.tds.mongoDb.*
+
+fun getMessage(driver: MongoDriver, authorId: String?) {
+    if (authorId!=null) {
+        val messages = driver
+            .getCollection<Message>(authorId)
+            .getAllDocuments()
+        messages.forEach { message ->
+            println(message)
+        }
+    } else TODO()
 }
 
-fun postMessage(author: Author, content: String?) {
-    println("postMessage: author = [${author}], content = [${content}]")
+fun postMessage(driver: MongoDriver, author: Author, content: String?) {
+    if (content==null)
+        println("Error: Missing content.")
+    else {
+        val col = driver.getCollection<Message>(author.id)
+        val res = col.insertDocument(Message(author, content))
+        println(
+            if (res) "Message \"$content\" posted by ${author.id}"
+            else "Error: Post failed."
+        )
+    }
 }
