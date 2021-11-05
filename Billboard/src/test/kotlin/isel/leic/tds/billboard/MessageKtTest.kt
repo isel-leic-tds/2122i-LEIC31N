@@ -4,13 +4,13 @@ import java.lang.IllegalArgumentException
 import kotlin.test.*
 
 internal class MessageKtTest {
-
     @Test
     fun `invalid author not accepted`() {
         assertFalse(isValidAuthorId(""))
         assertFalse(isValidAuthorId("   \n\t"))
+        assertFalse(isValidAuthorId("  user"))
+        assertFalse(isValidAuthorId("user   "))
     }
-
     @Test
     fun `valid author is accepted`() {
         assertTrue(isValidAuthorId("pg"))

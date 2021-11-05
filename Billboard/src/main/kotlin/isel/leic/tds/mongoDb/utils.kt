@@ -48,7 +48,7 @@ class MongoDriver(nameDb: String? =null) : Closeable {
      * @param id Collection identification.
      * @return The collection of documents of type T.
      */
-    inline fun <reified T : Any> getCollection(id: String): MongoCollection<T> =
+    inline fun <reified T :Any> getCollection(id: String): MongoCollection<T> =
         db.getCollection(id, T::class.java)
 
     /**

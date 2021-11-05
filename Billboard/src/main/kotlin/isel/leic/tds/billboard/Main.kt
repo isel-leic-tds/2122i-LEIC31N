@@ -2,29 +2,46 @@ package isel.leic.tds.billboard
 
 import isel.leic.tds.mongoDb.MongoDriver
 
+/**
+ * The application entry point.
+ */
 fun main() {
-    MongoDriver().use { mongoDriver ->
+    MongoDriver().use{ driver ->
+        val billboard = MongoBillboard(driver)
         val author = readAuthorId()
         while (true) {
-            val (cmd, parameter) = readCommand()
-            when (cmd) {
-                "GET" -> getMessage(mongoDriver,parameter)
-                "POST" -> postMessage(mongoDriver,author, parameter)
+            val (name,parameter) = readCommand()
+            when(name) {
+                "GET" -> getMessage(billboard, parameter)
+                "POST" -> postMessage(billboard, author, parameter)
                 "EXIT" -> break
                 else -> println("Invalid command")
             }
         }
     }
-
 }
 
+/**
+ * Command line after is parsed.
+ * first: name of command in uppercase.
+ * second: optional parameter (one or more words)
+ */
 typealias LineCommand = Pair<String, String?>
 
+/**
+ * Reads and parses a command line after write the prompt.
+ * @return command parsed
+ */
 fun readCommand(): LineCommand {
     print("> ")
     return readln().parseCommand()
 }
 
+/**
+ * Parses a string to extract a command.
+ * Pure function to be tested.
+ * @return command parsed.
+ */
 fun String.parseCommand(): LineCommand {
     val line = this.trim()
     val cmd = line.substringBefore(' ').uppercase()
@@ -32,6 +49,10 @@ fun String.parseCommand(): LineCommand {
     return cmd to param
 }
 
+/**
+ * Requests the author info to be used when posting billboard messages.
+ * @return  the author information
+ */
 fun readAuthorId(): Author {
     while (true) {
         print("Please provide your user id:")
@@ -40,6 +61,10 @@ fun readAuthorId(): Author {
     }
 }
 
+/**
+ * Functions to read a line from standard input.
+ * While we don't have the 1.6 version of the Kotlin library.
+ */
 fun readln() = readLine()!!
 fun readlnOrNull() = readLine()
 
