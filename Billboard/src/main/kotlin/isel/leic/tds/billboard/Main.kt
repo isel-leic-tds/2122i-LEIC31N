@@ -7,16 +7,32 @@ import isel.leic.tds.mongoDb.MongoDriver
  */
 fun main() {
     MongoDriver().use{ driver ->
-        val billboard = MongoBillboard(driver)
-        val author = readAuthorId()
+        val handlers = buildHandlers(MongoBillboard(driver), readAuthorId())
         while (true) {
-            val (name,parameter) = readCommand()
-            when(name) {
-                "GET" -> getMessage(billboard, parameter)
-                "POST" -> postMessage(billboard, author, parameter)
-                "EXIT" -> break
-                else -> println("Invalid command")
+            val (name, parameter) = readCommand()
+            val cmd = handlers[name]
+            if (cmd == null)
+                println("Invalid command")
+            else try {
+                val result = cmd.action(parameter) ?: break
+                cmd.show(result)
+            } catch (ex: Exception) {
+                println("Error: ${ex.message}.")
             }
+        }
+    }
+}
+
+fun main_old_using_commands() {
+    MongoDriver().use{ driver ->
+        val commands = buildCommands(MongoBillboard(driver), readAuthorId())
+        while (true) {
+            val (name, parameter) = readCommand()
+            val cmd = commands[name]
+            if (cmd == null)
+                println("Invalid command")
+            else
+                if (cmd(parameter) == Result.TERMINATE) break
         }
     }
 }
