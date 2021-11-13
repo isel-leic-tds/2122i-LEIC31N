@@ -2,6 +2,7 @@ package isel.leic.tds.billboard
 
 import isel.leic.tds.mongoDb.MongoDriver
 
+// MONGO_CONNECTION=mongodb+srv://user_tds:tds2122@cluster0.74mwi.mongodb.net/billboard?retryWrites=true&w=majority
 /**
  * The application entry point.
  */
@@ -19,20 +20,6 @@ fun main() {
             } catch (ex: Exception) {
                 println("Error: ${ex.message}.")
             }
-        }
-    }
-}
-
-fun main_old_using_commands() {
-    MongoDriver().use{ driver ->
-        val commands = buildCommands(MongoBillboard(driver), readAuthorId())
-        while (true) {
-            val (name, parameter) = readCommand()
-            val cmd = commands[name]
-            if (cmd == null)
-                println("Invalid command")
-            else
-                if (cmd(parameter) == Result.TERMINATE) break
         }
     }
 }

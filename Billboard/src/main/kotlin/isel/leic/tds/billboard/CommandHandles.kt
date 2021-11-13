@@ -1,25 +1,26 @@
 package isel.leic.tds.billboard
 
 /**
- * Base type of each command.
+ * Type of each command handler.
  * Explicitly separates the action of the command and the presentation of the result.
  * It is possible to do tests on the action, without having tests on the presentation.
+ * @property action The action function.
+ * @property show The show function.
  */
-interface Command<T> {
+data class Command<T>(
     /**
      * Performs the action of the command returning the information to present or null if it is to terminate.
-     * @param param Parameter given on command line.
-     * @return Information to show as a result or null to terminate.
-     * @throws Exception in case of failure with appropriate error message.
+     * Receive the parameter given on command line.
+     * May throws exception in case of failure with appropriate error message.
      */
-    fun action(param: String?): T?
+   val action: (String?) -> T?,
 
     /**
      * Displays the result returned by the action.
-     * @param result Information to show.
+     * Receive the result information to show.
      */
-    fun show(result: Any): Unit
-}
+    val show: (Any) -> Unit = { }
+)
 
 /**
  * Build the associative map of command handlers.
@@ -28,30 +29,19 @@ interface Command<T> {
  * @return The handlers map of all commands.
  */
 fun buildHandlers(billboard: Billboard, author: Author) = mapOf(
-    "EXIT" to object : Command<Nothing> {
-        override fun action(param: String?) = null
-        override fun show(result: Any) {}
-    },
-    "POST" to object : Command<String> {
-        override fun action(param: String?): String? {
-            postMessageAction(billboard, author, param)
-            return param
-        }
-        override fun show(result: Any) {
-            println("Message \"$result\" posted by ${author.id}")
-        }
-    },
-    "GET" to object : Command<Iterable<Message>> {
-        override fun action(param: String?) =
-            getMessageAction(billboard, param)
-        override fun show(result: Any) {
-            (result as Iterable<*>).forEach( ::println )
-        }
-    },
-    "USER" to object : Command<Unit> {
-        override fun action(param: String?) { }
-        override fun show(result: Any) {
-            println("Your user id is ${author.id}")
-        }
-    }
+    "EXIT" to Command( { null }  ),
+    "POST" to Command(
+        action = { /*param: String? ->*/
+            postMessageAction(billboard, author, it)
+            it
+        },
+        show = { println("Message \"$it\" posted by ${author.id}")  }
+    ),
+    "GET" to Command(
+        action = { getMessageAction(billboard, it) },
+        show = { (it as Iterable<*>).forEach( ::println ) }
+    ),
+    "USER" to Command(
+        { }, { println("Your user id is ${author.id}") }
+    )
 )
