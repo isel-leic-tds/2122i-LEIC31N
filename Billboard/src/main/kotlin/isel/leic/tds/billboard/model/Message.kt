@@ -1,8 +1,8 @@
-package isel.leic.tds.billboard
+package isel.leic.tds.billboard.model
 
 /**
- * Functions to read a line from standard input.
- * While we don't have the 1.6 version of the Kotlin library.
+ * Represents one author identification.
+ * @property id identification of the author.
  */
 data class Author(val id: String) {
     init {
@@ -28,7 +28,7 @@ fun String.toAuthorOrNull() = if (isValidAuthorId(this)) Author(this) else null
  * @property author   message author
  * @property content  message content
  */
-data class Message(val author:Author, val content:String) {
+data class Message(val author: Author, val content:String) {
     init { require(content.isNotBlank()) }
     override fun toString() = "${author.id}: $content"
 }

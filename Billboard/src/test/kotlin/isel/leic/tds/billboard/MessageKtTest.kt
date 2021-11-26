@@ -1,5 +1,8 @@
 package isel.leic.tds.billboard
 
+import isel.leic.tds.billboard.model.Author
+import isel.leic.tds.billboard.model.isValidAuthorId
+import isel.leic.tds.billboard.model.toAuthorOrNull
 import java.lang.IllegalArgumentException
 import kotlin.test.*
 
@@ -25,7 +28,7 @@ internal class MessageKtTest {
 
     @Test
     fun `create Author object`() {
-        assertEquals(Author("tds"),Author("tds"))
+        assertEquals(Author("tds"), Author("tds"))
         assertFailsWith<IllegalArgumentException> { Author("") }
     }
 }

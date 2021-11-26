@@ -1,5 +1,6 @@
 package isel.leic.tds.billboard
 
+import isel.leic.tds.billboard.ui.parseCommand
 import kotlin.test.*
 
 internal class MainKtTest {

@@ -1,4 +1,11 @@
-package isel.leic.tds.billboard
+package isel.leic.tds.billboard.model
+
+import isel.leic.tds.billboard.storage.Billboard
+
+/**
+ * Exception that can be thrown by any action in the model context.
+ */
+class ModelException(msg: String) : Exception(msg)
 
 /**
  * Returns messages from billboard posted by the specified author or by all authors.
@@ -17,10 +24,11 @@ fun getMessageAction(billboard: Billboard, authorId: String?) =
  * @param billboard to access Billboard operations
  * @param author the author of message
  * @param content the content of message, cannot be null.
- * @throws IllegalArgumentException if there is no content.
+ * @throws ModelException if there is no content.
  * @throws IllegalStateException if post failed
  */
 fun postMessageAction(billboard: Billboard, author: Author, content: String?) {
-    require(content!=null) { "Missing content" }
+    //require(content!=null) { "Missing content" }
+    if (content==null) throw ModelException("Missing content")
     check(billboard.postMessage(Message(author,content))) { "Post failed" }
 }

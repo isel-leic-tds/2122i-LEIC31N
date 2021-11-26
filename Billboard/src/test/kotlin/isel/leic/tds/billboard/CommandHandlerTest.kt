@@ -1,5 +1,10 @@
 package isel.leic.tds.billboard
 
+import isel.leic.tds.billboard.model.Author
+import isel.leic.tds.billboard.model.Message
+import isel.leic.tds.billboard.model.ModelException
+import isel.leic.tds.billboard.storage.MemoryBillboard
+import isel.leic.tds.billboard.ui.parseCommand
 import org.junit.jupiter.api.Test
 import kotlin.test.*
 
@@ -47,13 +52,13 @@ internal class CommandHandlerTest {
     fun `normal post`() {
         val (name,param) = "post msg 4".parseCommand()
         val res = assertNotNull(handlers[name]).action(param)
-        assertEquals(param,res)
+        assertEquals(Pair(param,"c"),res)
         assertEquals(param, billboard.data["c"]?.first()?.content)
         billboard.data.remove("c")
     }
     @Test
     fun `post without content`() {
-        val ex = assertFailsWith<IllegalArgumentException> {
+        val ex = assertFailsWith<ModelException> {
             handlers["POST"]?.action?.invoke(null)
         }
         assertEquals("Missing content",ex.message)

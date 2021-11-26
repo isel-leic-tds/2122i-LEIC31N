@@ -1,5 +1,7 @@
 package isel.leic.tds.billboard
 
+import isel.leic.tds.billboard.model.*
+import isel.leic.tds.billboard.storage.MemoryBillboard
 import kotlin.test.*
 
 internal class CommandActionKtTest {
@@ -25,14 +27,14 @@ internal class CommandActionKtTest {
     }
     @Test
     fun `normal post`() {
-        postMessageAction(billboard,Author("c"),"msg 4")
+        postMessageAction(billboard, Author("c"),"msg 4")
         assertEquals("msg 4", billboard.data["c"]?.first()?.content)
         billboard.data.remove("c")
     }
     @Test
     fun `post without content`() {
-        val ex = assertFailsWith<IllegalArgumentException> {
-            postMessageAction(billboard,Author("c"),null)
+        val ex = assertFailsWith<ModelException> {
+            postMessageAction(billboard, Author("c"),null)
         }
         assertEquals("Missing content",ex.message)
     }
@@ -40,7 +42,7 @@ internal class CommandActionKtTest {
     fun `post failed`() {
         billboard.fail = true
         val ex = assertFailsWith<IllegalStateException> {
-            postMessageAction(billboard,Author("c"),"msg 4")
+            postMessageAction(billboard, Author("c"),"msg 4")
         }
         billboard.fail = false
         assertEquals("Post failed",ex.message)

@@ -1,5 +1,8 @@
-package isel.leic.tds.billboard
+package isel.leic.tds.billboard.storage
 
+import com.mongodb.MongoException
+import isel.leic.tds.billboard.model.Author
+import isel.leic.tds.billboard.model.Message
 import isel.leic.tds.mongoDb.*
 
 /**
@@ -26,18 +29,36 @@ interface Billboard {
 }
 
 /**
+ * Exception that can be thrown by any Billboard interface operation.
+ */
+class StorageException(cause: Throwable) : Exception(cause)
+
+/**
+ * Executes the function passed as a parameter turning Mongo exceptions into Storage exceptions.
+ * @param fx Function to execute that can throw Mongo exceptions.
+ * @return The result of executing the function [fx]
+ * @throws StorageException if [fx] throws MongoException
+ */
+fun <T> tryStorage( fx: ()->T ) =
+    try { fx() }
+    catch(ex: MongoException) { throw StorageException(ex) }
+
+/**
  * Implements the billboard operations using a MongoDB instance.
  * @property driver to access MongoDb
  */
 class MongoBillboard(val driver: MongoDriver): Billboard {
-    override fun postMessage(msg: Message) =
+    override fun postMessage(msg: Message) = tryStorage {
         driver.getCollection<Message>(msg.author.id).insertDocument(msg)
+    }
 
-    override fun getAllMessages() =
-        driver.getAllCollections<Message>().flatMap{ it.getAllDocuments() }
+    override fun getAllMessages() : Iterable<Message> = tryStorage {
+        driver.getAllCollections<Message>().flatMap { it.getAllDocuments() }
+    }
 
-    override fun getMessagesByAuthor(author: Author) =
+    override fun getMessagesByAuthor(author: Author) = tryStorage {
         driver.getCollection<Message>(author.id).getAllDocuments()
+    }
 }
 
 /**
