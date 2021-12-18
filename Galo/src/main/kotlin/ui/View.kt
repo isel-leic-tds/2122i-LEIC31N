@@ -46,10 +46,11 @@ fun PlayView(pos: Position, player: Player?, onClick: () -> Unit) {
  * @param onClick Function called when there is an attempt to play in a position.
  */
 @Composable
-fun GaloView(game: Game, onClick: (Position)->Unit ) {
+fun GaloView(game: Game?, onClick: (Position)->Unit ) {
     Box(Modifier.background(Color.Black).size(BOARD_SIDE)) {
-        Position.values.forEach { pos ->
-            PlayView(pos, game[pos]) { onClick(pos) }
-        }
+        if (game!=null)
+            Position.values.forEach { pos ->
+                PlayView(pos, game[pos]) { onClick(pos) }
+            }
     }
 }

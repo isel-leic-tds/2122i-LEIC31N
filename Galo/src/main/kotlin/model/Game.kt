@@ -109,7 +109,7 @@ class Game {
      * Auxiliary function to check a sequence of moves from the last player.
      */
     private fun sequence( cond: (Position)->Boolean ) =
-        Position.values.filter { cond(it) }.map { board[it] }.any { it!=turn.other }
+        Position.values.filter { cond(it) }.map { board[it] }.count { it==turn.other } == GAME_DIM
 
     /**
      * Checks if the last move completed a row, a column or one of the diagonals.

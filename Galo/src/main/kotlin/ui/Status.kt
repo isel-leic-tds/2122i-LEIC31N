@@ -10,14 +10,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.window.FrameWindowScope
 import model.Game
+import model.GameStatus
 
 /**
  * Status Bar of the game.
  */
 @Composable
-fun FrameWindowScope.StatusView(game: Game) =
+fun FrameWindowScope.StatusView(status: GameStatus) =
     Row(Modifier.width(BOARD_SIDE).background(Color.Yellow), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text("Turn: ${game.turn.letter}")
-        if (game.isOver)
-            Text("GAME OVER")
+        val game = status.game
+        if (game!=null) {
+            Text("Player:${status.player} Turn:${game.turn.letter}")
+            if (game.isOver)
+                Text("GAME OVER")
+        } else
+            Text("Select New or Join")
     }
