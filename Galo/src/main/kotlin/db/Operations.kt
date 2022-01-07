@@ -11,9 +11,9 @@ interface Operations {
      * Load all moves.
      * @return all moves read.
      */
-    fun load(): List<Move>
+    fun load(gameName:String): List<Move>
     /**
      * Save all [moves].
      */
-    fun save(moves: List<Move>)
+    fun save(gameName:String, moves: List<Move>)
 }

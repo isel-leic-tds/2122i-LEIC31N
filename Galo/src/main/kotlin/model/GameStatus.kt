@@ -14,24 +14,25 @@ import kotlinx.coroutines.withContext
  */
 data class GameStatus(
     val opers: Operations,
+    val name: String="Unknown",
     val player: Player?=null,
     val game: Game? =null,
-    val moves: List<Move> = emptyList()
+    val moves: List<Move> = emptyList(),
 ) {
     /**
      * Create a new game where the player is the cross (first player).
      */
-    fun new(): GameStatus {
-        opers.save(emptyList())
-        return GameStatus(opers, Player.CROSS, Game())
+    fun new(name: String): GameStatus {
+        opers.save(name, emptyList())
+        return GameStatus(opers, name, Player.CROSS, Game())
     }
 
     /**
      * Open the game where the player is the circle (second player).
      */
-    fun join(): GameStatus {
-        val moves = opers.load()
-        return GameStatus(opers, Player.CIRCLE, Game(moves), moves)
+    fun join(name :String): GameStatus {
+        val moves = opers.load(name)
+        return GameStatus(opers, name, Player.CIRCLE, Game(moves), moves)
     }
 
     /**
@@ -39,9 +40,9 @@ data class GameStatus(
      */
     fun refresh(): GameStatus {
         if (game==null) return this
-        val moves = opers.load()
+        val moves = opers.load(name)
         return if (moves.size==game.numberOfPlays) this
-        else GameStatus(opers, player, Game(moves), moves)
+        else GameStatus(opers, name, player, Game(moves), moves)
     }
 
     /**
@@ -52,8 +53,8 @@ data class GameStatus(
         val g = game.tryPlay(position)
         if (g === game) return this
         val moves = this.moves + Move(position,game.turn)
-        opers.save( moves )
-        return GameStatus(opers,player,g, moves)
+        opers.save(name, moves )
+        return GameStatus(opers,name,player,g, moves)
     }
 
     /**

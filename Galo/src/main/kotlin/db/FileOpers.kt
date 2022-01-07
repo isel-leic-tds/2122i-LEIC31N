@@ -4,18 +4,19 @@ import model.*
 import java.io.File
 
 /**
- * Implementation of basic operations for game data persistence using a local file.
+ * Implementation of basic operations for game data persistence using local files.
  */
-class FileOpers(val fileName: String) : Operations {
+class FileOpers : Operations {
+    private fun file(gameName: String) = File("$gameName.txt")
     /**
      * Load all moves from file.
      * @return all moves read.
      */
-    override fun load() = File(fileName).readLines().map { it.toMove() }
+    override fun load(gameName:String) = file(gameName).readLines().map { it.toMove() }
 
     /**
      * Save all [moves] in file.
      */
-    override fun save(moves: List<Move>) =
-        File(fileName).writeText( moves.joinToString("\n") { it.toText() } )
+    override fun save(gameName:String, moves: List<Move>) =
+        file(gameName).writeText( moves.joinToString("\n") { it.toText() } )
 }

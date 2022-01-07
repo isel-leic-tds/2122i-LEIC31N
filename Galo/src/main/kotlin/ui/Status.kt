@@ -20,7 +20,7 @@ fun FrameWindowScope.StatusView(status: GameStatus) =
     Row(Modifier.width(BOARD_SIDE).background(Color.Yellow), horizontalArrangement = Arrangement.SpaceBetween) {
         val game = status.game
         if (game!=null) {
-            Text("Player:${status.player} Turn:${game.turn.letter}")
+            Text("Player:${status.player?.letter} Turn:${game.turn.letter}")
             if (game.isOver)
                 Text("GAME OVER")
         } else

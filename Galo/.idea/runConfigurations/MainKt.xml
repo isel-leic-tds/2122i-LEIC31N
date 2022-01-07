@@ -1,5 +1,8 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="MainKt" type="JetRunConfigurationType" singleton="false" nameIsGenerated="true">
+    <envs>
+      <env name="MONGO_CONNECTION" value="mongodb+srv://user_tds:tds2122@cluster0.74mwi.mongodb.net/galo?retryWrites=true&amp;w=majority" />
+    </envs>
     <option name="MAIN_CLASS_NAME" value="MainKt" />
     <module name="Galo.main" />
     <shortenClasspath name="NONE" />
