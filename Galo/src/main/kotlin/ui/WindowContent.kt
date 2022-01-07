@@ -19,36 +19,23 @@ import model.GameStatus
 fun FrameWindowScope.WindowContent(driver: MongoDriver, onExit: ()->Unit ) {
     val scope = rememberCoroutineScope()
     //var status by remember { mutableStateOf(GameStatus(FileOpers())) } // The state of the game in local file
-    var status by remember { mutableStateOf(GameStatus(MongoOpers(driver))) } // The state of the game in mongoDB documents
-    var startGame by remember { mutableStateOf<((gameName: String) -> GameStatus)?>(null) }
-
-    fun waitOther() { scope.launch { status = status.waitForOther() } }
+    val status = remember { GameViewStatus(MongoOpers(driver),scope) } // The state of the game in mongoDB documents
+    var startGame by remember { mutableStateOf<((gameName: String) -> Unit)?>(null) }
 
     DesktopMaterialTheme {
         GaloMenuBar(
-            status,
             onNew = { startGame = { status.new(it) } },
-            onJoin = {
-                startGame = {
-                    val gs = status.join(it)
-                    waitOther()
-                    gs
-                }
-            },
-            onRefresh = { status = status.refresh() },
+            onJoin = { startGame = { status.join(it) } },
             onExit = onExit
         )
         Column {
-            GaloView(status.game) { pos ->
-                status = status.tryPlay(pos)
-                waitOther()
-            }
+            GaloView(status.game) { pos -> status.tryPlay(pos) }
             StatusView(status)
         }
         val currStartGame = startGame
         if (currStartGame != null)
             DialogGameName(
-                onOk = { status = currStartGame(it); startGame = null },
+                onOk = { currStartGame(it); startGame = null },
                 onCancel = { startGame = null }
             )
     }

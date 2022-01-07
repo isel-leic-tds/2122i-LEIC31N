@@ -15,16 +15,15 @@ import model.GameStatus
  */
 @Composable
 fun FrameWindowScope.GaloMenuBar(
-    status: GameStatus,
+    //status: GameStatus,
     onNew: ()->Unit,
     onJoin: ()->Unit,
-    onRefresh: ()->Unit,
     onExit: ()->Unit
 ) =  MenuBar {
     Menu("Game",'G') {
         Item("New", onClick =  onNew )
         Item("Join", onClick =  onJoin )
-        Item("Refresh", onClick =  onRefresh, enabled = status.game!=null )
+        //Item("Refresh", onClick =  onRefresh, enabled = status.game!=null )
         Item("Exit", onClick = onExit )
     }
 }

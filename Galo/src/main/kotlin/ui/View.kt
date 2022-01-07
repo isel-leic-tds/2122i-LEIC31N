@@ -34,12 +34,15 @@ fun PlayView(pos: Position, player: Player?, onClick: () -> Unit) {
         .background(Color.White)
     if (player == null)
         Box(m.clickable { onClick() })
-    else {
-        val img = if (player == Player.CROSS) "cross" else "circle"
-        Image(painterResource("$img.png"), img, m)
-    }
+    else
+        PlayerImage(player, m)
 }
 
+@Composable
+fun PlayerImage(player: Player?, m: Modifier = Modifier) {
+    val img = if (player == Player.CROSS) "cross" else "circle"
+    Image(painterResource("$img.png"), img, m)
+}
 /**
  * Composable to display the game grid.
  * @param game The current state of the game
