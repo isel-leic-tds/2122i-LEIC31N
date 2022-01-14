@@ -25,28 +25,34 @@ class GameViewStatus( private val opers: Operations, private val scope: Coroutin
     var game by mutableStateOf<Game?>(null)
         private set
     private var moves: List<Move> = emptyList()
+    val waiting: Boolean get() = waitingJob!=null
+    private var waitingJob: Job? = null
     /**
      * Create a new game where the player is the cross (first player).
      * @param gameName Name of the game to create.
      */
     fun new(gameName: String) {
+        stopWait()
         name = gameName
         player = Player.CROSS
         game = Game()
         moves = emptyList()
-        opers.save(name, emptyList())
+        scope.launch { opers.save(name, emptyList()) }
     }
     /**
      * Open the game where the player is the circle (second player).
      * @param gameName Name of the game to load.
      */
     fun join(gameName :String) {
+        stopWait()
         name = gameName
-        moves = opers.load(name)
         player = Player.CIRCLE
-        val g = Game( moves )
-        game = g
-        if ( player != g.turn ) waitForOther()
+        scope.launch {
+            moves = opers.load(name)
+            val g = Game(moves)
+            game = g
+            if (player != g.turn) waitForOther()
+        }
     }
     /**
      * Try to make a move in the indicated [position].
@@ -59,24 +65,35 @@ class GameViewStatus( private val opers: Operations, private val scope: Coroutin
         if (g2 === g) return
         moves = moves + Move(position,g.turn)
         game = g2
-        opers.save(name, moves)
-        waitForOther()
+        scope.launch {
+            opers.save(name, moves)
+            waitForOther()
+        }
     }
     /**
-     * Perform refresh operations, every 3 seconds, until there are more moves (the other player plays).
-     * This function launch a coroutine and suspends its execution.
-     * The suspended code will be executed in an IO thread.
+     * Loads game moves, every 3 seconds, until there are more moves (when opponent plays).
+     * This function starts a coroutine and suspends its execution.
+     * The Job object allows canceling the wait, if necessary.
      */
     private fun waitForOther() {
-        val g = game ?: return
-        if (g.isOver) return
-        scope.launch(Dispatchers.IO) {
+        val g = game
+        if (g==null || g.isOver) return
+        waitingJob = scope.launch {
             do {
                 delay(3000)
                 moves = opers.load(name)
             } while (moves.size==g.numberOfPlays)
-            //game = Game(moves)
+            game = Game(moves)
+            waitingJob = null
         }
-        game = Game(moves)
+    }
+
+    /**
+     * Cancels the waiting for opponent's play.
+     */
+    private fun stopWait() {
+        val job = waitingJob ?: return
+        job.cancel()
+        waitingJob = null
     }
 }

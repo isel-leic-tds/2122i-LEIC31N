@@ -3,7 +3,6 @@ package ui
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.window.FrameWindowScope
 import androidx.compose.ui.window.MenuBar
-import model.GameStatus
 
 /**
  * MunuBar of the game.

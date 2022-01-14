@@ -5,6 +5,9 @@ import com.mongodb.client.*
 import org.litote.kmongo.*
 import java.io.Closeable
 
+// MONGO_DB_NAME=galo
+// MONGO_CONNECTION=mongodb+srv://user_tds:tds2122@cluster0.74mwi.mongodb.net/galo?retryWrites=true&w=majority
+
 private const val ENV_CONNECTION = "MONGO_CONNECTION"
 private const val ENV_DB_NAME = "MONGO_DB_NAME"
 
